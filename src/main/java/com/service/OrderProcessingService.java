@@ -20,8 +20,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.config.AuthProperties;
 import com.exceptions.OrderNotFoundException;
 import com.orderentity.Order;
 
@@ -55,15 +56,15 @@ public class OrderProcessingService extends WebSecurityConfigurerAdapter {
         }
     }
 
-    @Value("${auth.server.url}")
-    private String authServerUrl;
+    @Autowired
+    private AuthProperties authProperties;
 
     @Bean
     public ResourceServerTokenServices tokenServices() {
         RemoteTokenServices tokenServices = new RemoteTokenServices();
-        tokenServices.setClientId("orderprocessingservice");
-        tokenServices.setClientSecret("orderprocessingservicesecret");
-        tokenServices.setCheckTokenEndpointUrl(authServerUrl);
+        tokenServices.setClientId(authProperties.getClientId());
+        tokenServices.setClientSecret(authProperties.getClientSecret());
+        tokenServices.setCheckTokenEndpointUrl(authProperties.getServerUrl());
         return tokenServices;
     }
 
