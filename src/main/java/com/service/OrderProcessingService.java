@@ -4,32 +4,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
-import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationManager;
-import org.springframework.security.oauth2.provider.token.RemoteTokenServices;
-import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.config.AuthProperties;
 import com.exceptions.OrderNotFoundException;
 import com.orderentity.Order;
 
-@EnableWebSecurity
 @RestController
 @RequestMapping("/orders")
-public class OrderProcessingService extends WebSecurityConfigurerAdapter {
+public class OrderProcessingService {
 
     private Map<String, Order> orders = new HashMap<>();
 
@@ -55,24 +44,4 @@ public class OrderProcessingService extends WebSecurityConfigurerAdapter {
             throw new OrderNotFoundException();
         }
     }
-
-    @Autowired
-    private AuthProperties authProperties;
-
-    @Bean
-    public ResourceServerTokenServices tokenServices() {
-        RemoteTokenServices tokenServices = new RemoteTokenServices();
-        tokenServices.setClientId(authProperties.getClientId());
-        tokenServices.setClientSecret(authProperties.getClientSecret());
-        tokenServices.setCheckTokenEndpointUrl(authProperties.getServerUrl());
-        return tokenServices;
-    }
-
-    @Override
-    public AuthenticationManager authenticationManagerBean() {
-        OAuth2AuthenticationManager authenticationManager = new OAuth2AuthenticationManager();
-        authenticationManager.setTokenServices(tokenServices());
-        return authenticationManager;
-    }
-
 }
